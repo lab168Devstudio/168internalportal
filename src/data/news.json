@@ -1,0 +1,25 @@
+[
+  {
+    "title": "Welcoming New Client Success Analyst",
+    "slug": "client-success-analyst",
+    "date": "Oct 28, 2025",
+    "author": "Lab168 Communications",
+    "summary": "Drew Carter joins the Client Success team to double down on lifecycle playbooks and analytics.",
+    "body": "Drew will collaborate with Harper to codify activation playbooks and refine our health scoring models.",
+    "links": [
+      { "label": "Team Directory", "url": "https://lab168.ca/internal/org" }
+    ]
+  },
+  {
+    "title": "Automation Pod Ships Signal Hub Integration",
+    "slug": "signal-hub-integration",
+    "date": "Oct 25, 2025",
+    "author": "Automation Pod",
+    "summary": "Rowan and Priya delivered a new workflow wiring automation signals straight into the Lifecycle Hub.",
+    "body": "This upgrade reduces manual setup time by 35% and adds automated QA coverage for key scenarios.",
+    "links": [
+      { "label": "Automation Playbook", "url": "https://lab168.ca/tools/automation-playbook" },
+      { "label": "Lifecycle Signal Hub", "url": "https://lab168.ca/tools/lifecycle-signal-hub" }
+    ]
+  }
+]

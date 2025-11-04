@@ -1,0 +1,26 @@
+[
+  {
+    "toolName": "Brand in a Box Builder",
+    "toolVersion": "1.0.1",
+    "tags": ["price-calculator", "brand-in-a-box"],
+    "toolTagline": "Configure modules, generate instant quotes, and ship client-ready summaries.",
+    "open": "https://priceportalhub.netlify.app",
+    "docs": "https://lab168.ca"
+  },
+  {
+    "toolName": "Email Template Builder",
+    "toolVersion": "1.0.0",
+    "tags": ["email-builder", "internal-tools"],
+    "toolTagline": "test description",
+    "open": "https://priceportalhub.netlify.app",
+    "docs": "https://lab168.ca"
+  },
+  {
+    "toolName": "Lab168 - Home",
+    "toolVersion": "1.0.0",
+    "tags": ["website", "lab168"],
+    "toolTagline": "Home website for Lab168",
+    "open": "https://lab168.ca",
+    "docs": "https://lab168.ca"
+  }
+]

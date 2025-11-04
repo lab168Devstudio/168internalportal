@@ -1,0 +1,12 @@
+[
+  {
+    "version": "Internal Portal 1.0.0",
+    "date": "Oct 29, 2025",
+    "summary": "Initial release of the internal portal dashboard with tools, org chart, and project tracking.",
+    "highlights": [
+      "Tools catalog backed by JSON data",
+      "Org chart moved to dedicated view",
+      "Internal projects page featuring FY26 program"
+    ]
+  }
+]

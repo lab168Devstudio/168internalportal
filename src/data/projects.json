@@ -1,0 +1,21 @@
+[
+  {
+    "projectName": "FY26 Strategic Program",
+    "projectId": "PRJ-FY26",
+    "startDate": "2025-10-01",
+    "dueDate": "2026-09-30",
+    "projectManager": "Arianna Chen",
+    "revenueImpacting": true,
+    "cost": 185000,
+    "projectSummary": "Multi-unit program aligning roadmap, automation, success operations, and growth efforts to hit FY26 revenue targets.",
+    "assignedBusinessUnits": [
+      "Lab168 Leadership",
+      "Product Studio",
+      "Automation Pod",
+      "Client Success",
+      "Growth Lab",
+      "Innovation Lab"
+    ],
+    "learnMore": "https://lab168.ca/initiatives/fy26"
+  }
+]

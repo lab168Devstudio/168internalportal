@@ -1,0 +1,65 @@
+{
+  "businessUnits": [
+    {
+      "id": "leadership",
+      "name": "Executive Leadership - CAIO",
+      "employees": [
+        {
+          "id": "L168-001",
+          "name": "Alex Molloy",
+          "jobTitle": "Co-Founder, Chief Operations Officer - Growth Strategy",
+          "businessUnit": "Executive Leadership - CAIO",
+          "phone": "+1-709-424-2256",
+          "email": "alex@lab168.ca",
+          "employeeId": "L168-001",
+          "tags": ["Operations Management", "Brand Growth"],
+          "startDate": "2025-08-15",
+          "summary": "Owns the Growth Strategy Portfolio, Internal Operations Portfolio, Internal Policy",
+          "directReports": 0,
+          "manager": null,
+          "projects": ["FY26 Growth Strategy"]
+        },
+        {
+          "id": "L168-002",
+          "name": "Matt Rice",
+          "jobTitle": "Co-Founder, Chief Technology Officer - Products & Systems",
+          "businessUnit": "Lab168 Leadership",
+          "phone": "+1-709-424-5485",
+          "email": "matt@lab168.ca",
+          "employeeId": "L168-002",
+          "tags": ["AI Architecture", "Systems Management"],
+          "startDate": "2025-08-15",
+          "summary": "Guides product architecture, internal tooling, and AI-driven automation across every delivery pod.",
+          "directReports": 0,
+          "manager": null,
+          "projects": ["FY26 Growth Strategy"]
+        }
+      ]
+    },
+    {
+      "id": "product-studio",
+      "name": "Senior Leadership - Product",
+      "employees": []
+    },
+    {
+      "id": "automation-pod",
+      "name": "Design & Development - Product",
+      "employees": []
+    },
+    {
+      "id": "client-success",
+      "name": "Account Executive & Sales Leadership Team",
+      "employees": []
+    },
+    {
+      "id": "innovation-lab",
+      "name": "Business Analyst, Product Research",
+      "employees": []
+    },
+    {
+      "id": "growth-lab",
+      "name": "Sales Team, Customer Service Team.",
+      "employees": []
+    }
+  ]
+}
