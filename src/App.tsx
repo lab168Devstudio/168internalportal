@@ -14,7 +14,9 @@ import {
   CalendarDays,
   Tags as TagsIcon,
   FolderKanban,
-  UserCircle2
+  UserCircle2,
+  Info,
+  X
 } from "lucide-react";
 import orgChartData from "./data/orgChart.json";
 import projectsData from "./data/projects.json";
@@ -35,6 +37,7 @@ interface Tool {
   toolVersion: string;
   tags: string[];
   toolTagline: string;
+  description: string;
   open: string;
   docs: string;
 }
@@ -173,7 +176,7 @@ function Tag({ t }: { t: string }) {
 }
 
 
-function ToolCard({ tool }: { tool: Tool }) {
+function ToolCard({ tool, onInfo }: { tool: Tool; onInfo: () => void }) {
   return (
     <motion.div
       layout
@@ -210,14 +213,15 @@ function ToolCard({ tool }: { tool: Tool }) {
           Open
           <ChevronRight className="h-4 w-4 transition -mr-1 group-hover/btn:translate-x-0.5" />
         </a>
-        <a
-          href={tool.docs}
-          target="_blank"
-          rel="noreferrer"
-          className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 hover:bg-white/10"
+        <button
+          type="button"
+          onClick={onInfo}
+          className="group/btn-info inline-flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 hover:bg-white/10"
+          aria-label={`More information about ${tool.toolName}`}
         >
-          Resources
-        </a>
+          Info
+          <Info className="h-4 w-4 text-white/60 transition group-hover/btn-info:text-white/80" />
+        </button>
       </div>
     </motion.div>
   );
@@ -588,6 +592,8 @@ export default function App() {
 
   const [query, setQuery] = useState("");
 
+  const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
+
 
 
   useEffect(() => {
@@ -603,6 +609,21 @@ export default function App() {
     return () => window.removeEventListener("mousemove", onMove);
 
   }, []);
+
+  useEffect(() => {
+    if (!selectedTool) {
+      return;
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedTool(null);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selectedTool]);
 
 
 const visibleTools = useMemo(() => {
@@ -620,6 +641,7 @@ const visibleTools = useMemo(() => {
         tool.toolTagline,
         tool.toolVersion,
         ...(tool.tags ?? []),
+        tool.description,
         tool.open,
         tool.docs,
       ]
@@ -789,12 +811,16 @@ const hasQuery = trimmedQuery.length > 0;
               ) : (
                 <motion.div layout className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {visibleTools.map(tool => (
-                    <ToolCard key={`${tool.toolName}-${tool.toolVersion}`} tool={tool} />
+                    <ToolCard
+                      key={`${tool.toolName}-${tool.toolVersion}`}
+                      tool={tool}
+                      onInfo={() => setSelectedTool(tool)}
+                    />
                   ))}
-                </motion.div>
-              )}
+              </motion.div>
+            )}
 
-            </motion.div>
+          </motion.div>
 
           )}
 
@@ -873,6 +899,75 @@ const hasQuery = trimmedQuery.length > 0;
 
           )}
 
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {selectedTool && (
+            <motion.div
+              key="tool-info-modal"
+              className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div
+                className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+                onClick={() => setSelectedTool(null)}
+              />
+              <motion.div
+                role="dialog"
+                aria-modal="true"
+                className="relative z-10 w-full max-w-lg rounded-2xl border border-white/10 bg-neutral-900/95 p-6 shadow-xl"
+                initial={{ scale: 0.97, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.97, opacity: 0 }}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-lg font-semibold tracking-tight text-white">{selectedTool.toolName}</h3>
+                    <p className="mt-1 text-sm text-white/70">{selectedTool.toolTagline}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTool(null)}
+                    className="rounded-lg border border-transparent p-1 text-white/60 transition hover:border-white/20 hover:text-white"
+                    aria-label="Close"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className="mt-3 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/60">
+                  <Hash className="h-3 w-3 text-white/50" />
+                  v{selectedTool.toolVersion}
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {selectedTool.tags.map(tag => (
+                    <Tag key={tag} t={tag} />
+                  ))}
+                </div>
+                <p className="mt-4 text-sm leading-relaxed text-white/70">{selectedTool.description}</p>
+                <div className="mt-6 flex flex-wrap gap-2">
+                  <a
+                    href={selectedTool.open}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-sm text-white/80 transition hover:bg-red-500/20"
+                  >
+                    Open Tool
+                    <ChevronRight className="h-4 w-4" />
+                  </a>
+                  <a
+                    href={selectedTool.docs}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 hover:bg-white/10"
+                  >
+                    Documentation
+                  </a>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
         </AnimatePresence>
 
         {/* Footer */}
