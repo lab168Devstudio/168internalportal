@@ -38,7 +38,9 @@ interface Tool {
   tags: string[];
   toolTagline: string;
   description: string;
+  openLabel?: string;
   open: string;
+  docsLabel?: string;
   docs: string;
 }
 
@@ -141,7 +143,11 @@ interface InternalProject {
   cost: number;
   projectSummary: string;
   assignedBusinessUnits: string[];
+  learnMoreLabel?: string;
   learnMore: string;
+  lastUpdatedNote?: string;
+  detailSummary?: string;
+  detailHighlights?: string[];
 }
 
 const INTERNAL_PROJECTS: InternalProject[] = projectsData;
@@ -495,7 +501,13 @@ function UpdatesPage({ updates }: { updates: UpdateEntry[] }) {
     </section>
   );
 }
-function ProjectsPage({ projects }: { projects: InternalProject[] }) {
+function ProjectsPage({
+  projects,
+  onSelect
+}: {
+  projects: InternalProject[];
+  onSelect: (project: InternalProject) => void;
+}) {
   return (
     <section className="mt-6 space-y-5">
       <div className="space-y-2">
@@ -564,16 +576,17 @@ function ProjectsPage({ projects }: { projects: InternalProject[] }) {
               </div>
             </div>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-              <a
-                href={project.learnMore}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 hover:bg-white/10"
+              <button
+                type="button"
+                onClick={() => onSelect(project)}
+                className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 transition hover:bg-white/10"
               >
-                Learn More
+                {project.learnMoreLabel ?? "Learn More"}
                 <ChevronRight className="h-4 w-4" />
-              </a>
-              <div className="text-xs text-white/60">Last updated: FY26 program tracking</div>
+              </button>
+              <div className="text-xs text-white/60">
+                Last updated: {project.lastUpdatedNote ?? "FY26 program tracking"}
+              </div>
             </div>
           </motion.article>
         ))}
@@ -594,6 +607,8 @@ export default function App() {
 
   const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
 
+  const [selectedProject, setSelectedProject] = useState<InternalProject | null>(null);
+
 
 
   useEffect(() => {
@@ -611,19 +626,24 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!selectedTool) {
+    if (!selectedTool && !selectedProject) {
       return;
     }
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setSelectedTool(null);
+        if (selectedTool) {
+          setSelectedTool(null);
+        }
+        if (selectedProject) {
+          setSelectedProject(null);
+        }
       }
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selectedTool]);
+  }, [selectedTool, selectedProject]);
 
 
 const visibleTools = useMemo(() => {
@@ -833,7 +853,7 @@ const hasQuery = trimmedQuery.length > 0;
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.25 }}
             >
-              <ProjectsPage projects={INTERNAL_PROJECTS} />
+              <ProjectsPage projects={INTERNAL_PROJECTS} onSelect={project => setSelectedProject(project)} />
             </motion.div>
           )}
 
@@ -953,7 +973,7 @@ const hasQuery = trimmedQuery.length > 0;
                     rel="noreferrer"
                     className="inline-flex items-center gap-1 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-sm text-white/80 transition hover:bg-red-500/20"
                   >
-                    Open Tool
+                    {selectedTool.openLabel ?? "Open Tool"}
                     <ChevronRight className="h-4 w-4" />
                   </a>
                   <a
@@ -962,8 +982,118 @@ const hasQuery = trimmedQuery.length > 0;
                     rel="noreferrer"
                     className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 hover:bg-white/10"
                   >
-                    Documentation
+                    {selectedTool.docsLabel ?? "Documentation"}
                   </a>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+          {selectedProject && (
+            <motion.div
+              key="project-info-modal"
+              className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div
+                className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+                onClick={() => setSelectedProject(null)}
+              />
+              <motion.div
+                role="dialog"
+                aria-modal="true"
+                className="relative z-10 w-full max-w-2xl rounded-2xl border border-white/10 bg-neutral-900/95 p-6 shadow-xl"
+                initial={{ scale: 0.97, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.97, opacity: 0 }}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-lg font-semibold tracking-tight text-white">{selectedProject.projectName}</h3>
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-wide text-white/60">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5">
+                        <Hash className="h-3 w-3 text-white/50" />
+                        {selectedProject.projectId}
+                      </span>
+                      <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5">
+                        <CalendarDays className="h-3 w-3 text-white/50" />
+                        {selectedProject.startDate} to {selectedProject.dueDate}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedProject(null)}
+                    className="rounded-lg border border-transparent p-1 text-white/60 transition hover:border-white/20 hover:text-white"
+                    aria-label="Close project details"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className="mt-4 text-sm leading-relaxed text-white/70">
+                  {selectedProject.detailSummary ?? selectedProject.projectSummary}
+                </div>
+                <div className="mt-5 grid gap-3 text-sm text-white/80 sm:grid-cols-2">
+                  <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                    <div className="text-[11px] uppercase tracking-wide text-white/50">Project Manager</div>
+                    <div className="mt-1 inline-flex items-center gap-2 text-white/80">
+                      <UserCircle2 className="h-4 w-4 text-white/50" />
+                      <span>{selectedProject.projectManager}</span>
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                    <div className="text-[11px] uppercase tracking-wide text-white/50">Investment</div>
+                    <div className="mt-1 flex flex-col gap-1">
+                      <span>Cost: {formatCurrency(selectedProject.cost)}</span>
+                      <span>Revenue Impacting: {selectedProject.revenueImpacting ? "Yes" : "No"}</span>
+                    </div>
+                  </div>
+                </div>
+                {selectedProject.detailHighlights && selectedProject.detailHighlights.length > 0 && (
+                  <div className="mt-5">
+                    <div className="text-[11px] uppercase tracking-wide text-white/50">Key Highlights</div>
+                    <ul className="mt-2 space-y-2 text-sm text-white/80">
+                      {selectedProject.detailHighlights.map(item => (
+                        <li key={item} className="flex items-start gap-2">
+                          <ChevronRight className="mt-0.5 h-4 w-4 text-white/50" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {selectedProject.assignedBusinessUnits.length > 0 && (
+                  <div className="mt-5">
+                    <div className="text-[11px] uppercase tracking-wide text-white/50">Assigned Business Units</div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {selectedProject.assignedBusinessUnits.map(unit => (
+                        <span
+                          key={unit}
+                          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/80"
+                        >
+                          <Users className="h-3 w-3 text-white/50" />
+                          {unit}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+                  {selectedProject.learnMore && (
+                    <a
+                      href={selectedProject.learnMore}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-sm text-white/80 transition hover:bg-red-500/20"
+                    >
+                      {selectedProject.learnMoreLabel ?? "Open Project Docs"}
+                      <ChevronRight className="h-4 w-4" />
+                    </a>
+                  )}
+                  {selectedProject.lastUpdatedNote && (
+                    <div className="text-xs text-white/60">Last updated: {selectedProject.lastUpdatedNote}</div>
+                  )}
                 </div>
               </motion.div>
             </motion.div>

@@ -5,7 +5,9 @@
     "tags": ["price-calculator", "brand-in-a-box"],
     "toolTagline": "Configure modules, generate instant quotes, and ship client-ready summaries.",
     "description": "Plan deliverable stacks, auto-build quotes, and export summaries for brand-in-a-box engagements.",
+    "openLabel": "Open Tool",
     "open": "https://priceportalhub.netlify.app",
+    "docsLabel": "Documentation",
     "docs": "https://lab168.ca"
   },
   {
@@ -14,7 +16,9 @@
     "tags": ["email-builder", "internal-tools"],
     "toolTagline": "test description",
     "description": "Compose, QA, and version responsive email experiences with built-in brand guardrails and accessibility helpers.",
+    "openLabel": "Open Tool",
     "open": "https://priceportalhub.netlify.app",
+    "docsLabel": "Documentation",
     "docs": "https://lab168.ca"
   },
   {
@@ -23,7 +27,9 @@
     "tags": ["website", "lab168"],
     "toolTagline": "Home website for Lab168",
     "description": "Central destination for Lab168 updates, documentation, and quick links into the internal portfolio.",
+    "openLabel": "Visit Site",
     "open": "https://lab168.ca",
+    "docsLabel": "Learn More",
     "docs": "https://lab168.ca"
   }
 ]

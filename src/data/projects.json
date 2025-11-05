@@ -16,6 +16,14 @@
       "Growth Lab",
       "Innovation Lab"
     ],
-    "learnMore": "https://lab168.ca/initiatives/fy26"
+    "learnMoreLabel": "Open Program Hub",
+    "learnMore": "https://lab168.ca/initiatives/fy26",
+    "lastUpdatedNote": "FY26 program tracking",
+    "detailSummary": "FY26 Strategic Program synchronizes automation, product, client success, and growth labs into a single roadmap that protects renewals and unlocks expansion. The initiative creates shared accountability, shared dashboards, and repeatable playbooks that every pod can use to execute against the annual plan.",
+    "detailHighlights": [
+      "Codifies quarterly milestones across automation, GTM enablement, and client success operations.",
+      "Funds experimentation pods to validate two net-new service offerings before Q3 FY26.",
+      "Rolls out a unified metrics layer so leadership can review health, risk, and pipeline in a single workspace."
+    ]
   }
 ]
