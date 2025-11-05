@@ -188,46 +188,49 @@ function ToolCard({ tool, onInfo }: { tool: Tool; onInfo: () => void }) {
       layout
       whileHover={{ y: -3 }}
       whileTap={{ scale: 0.98 }}
-      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-neutral-900 to-black p-4 shadow-[0_0_0_1px_rgba(255,255,255,0.04)] hover:shadow-[0_0_0_1px_rgba(255,0,0,0.25)]"
+      className="group relative overflow-hidden rounded-2xl border border-red-500/15 bg-gradient-to-br from-[#1a050c]/80 via-[#0a0208]/85 to-[#050108]/90 p-4 shadow-[0_0_0_1px_rgba(255,255,255,0.04)] hover:border-red-500/40 hover:shadow-[0_20px_45px_-25px_rgba(248,113,113,0.6)]"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="truncate text-base font-semibold tracking-tight text-white">{tool.toolName}</h3>
-            <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/60">
-              <Hash className="h-3 w-3 text-white/50" />
-              {tool.toolVersion}
-            </span>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(248,113,113,0.18),transparent_60%)] opacity-90 transition-opacity duration-200 group-hover:opacity-100" />
+      <div className="relative">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="truncate text-base font-semibold tracking-tight text-white">{tool.toolName}</h3>
+              <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/60">
+                <Hash className="h-3 w-3 text-white/50" />
+                {tool.toolVersion}
+              </span>
+            </div>
+            <p className="mt-1 text-sm text-white/70 leading-relaxed">{tool.toolTagline}</p>
           </div>
-          <p className="mt-1 text-sm text-white/70 leading-relaxed">{tool.toolTagline}</p>
         </div>
-      </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        {tool.tags.map(tag => (
-          <Tag key={tag} t={tag} />
-        ))}
-      </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {tool.tags.map(tag => (
+            <Tag key={tag} t={tag} />
+          ))}
+        </div>
 
-      <div className="mt-4 flex items-center gap-2">
-        <a
-          href={tool.open}
-          target="_blank"
-          rel="noreferrer"
-          className="group/btn inline-flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 hover:bg-white/10"
-        >
-          Open
-          <ChevronRight className="h-4 w-4 transition -mr-1 group-hover/btn:translate-x-0.5" />
-        </a>
-        <button
-          type="button"
-          onClick={onInfo}
-          className="group/btn-info inline-flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 hover:bg-white/10"
-          aria-label={`More information about ${tool.toolName}`}
-        >
-          Info
-          <Info className="h-4 w-4 text-white/60 transition group-hover/btn-info:text-white/80" />
-        </button>
+        <div className="mt-4 flex items-center gap-2">
+          <a
+            href={tool.open}
+            target="_blank"
+            rel="noreferrer"
+            className="group/btn inline-flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 hover:bg-white/10"
+          >
+            Open
+            <ChevronRight className="h-4 w-4 transition -mr-1 group-hover/btn:translate-x-0.5" />
+          </a>
+          <button
+            type="button"
+            onClick={onInfo}
+            className="group/btn-info inline-flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 hover:bg-white/10"
+            aria-label={`More information about ${tool.toolName}`}
+          >
+            Info
+            <Info className="h-4 w-4 text-white/60 transition group-hover/btn-info:text-white/80" />
+          </button>
+        </div>
       </div>
     </motion.div>
   );
@@ -427,35 +430,38 @@ function NewsPage({ posts }: { posts: NewsPost[] }) {
           <motion.article
             key={post.slug}
             layout
-            className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.04)]"
+            className="relative overflow-hidden rounded-2xl border border-red-500/15 bg-[#17040f]/70 p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.04)] backdrop-blur"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25 }}
           >
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h3 className="text-lg font-semibold tracking-tight text-white">{post.title}</h3>
-                <p className="text-xs uppercase tracking-wide text-white/50">{post.date} · {post.author}</p>
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(248,113,113,0.12),transparent_70%)] opacity-90" />
+            <div className="relative">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-semibold tracking-tight text-white">{post.title}</h3>
+                  <p className="text-xs uppercase tracking-wide text-white/50">{post.date} · {post.author}</p>
+                </div>
               </div>
+              <p className="mt-2 text-sm text-white/70 leading-relaxed">{post.summary}</p>
+              <p className="mt-3 text-sm text-white/80 leading-relaxed">{post.body}</p>
+              {post.links.length > 0 && (
+                <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+                  {post.links.map(link => (
+                    <a
+                      key={link.url}
+                      href={link.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/80 hover:bg-white/10"
+                    >
+                      <ChevronRight className="h-3 w-3" />
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
-            <p className="mt-2 text-sm text-white/70 leading-relaxed">{post.summary}</p>
-            <p className="mt-3 text-sm text-white/80 leading-relaxed">{post.body}</p>
-            {post.links.length > 0 && (
-              <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
-                {post.links.map(link => (
-                  <a
-                    key={link.url}
-                    href={link.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/80 hover:bg-white/10"
-                  >
-                    <ChevronRight className="h-3 w-3" />
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            )}
           </motion.article>
         ))}
       </div>
@@ -474,27 +480,30 @@ function UpdatesPage({ updates }: { updates: UpdateEntry[] }) {
           <motion.article
             key={note.version}
             layout
-            className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.04)]"
+            className="relative overflow-hidden rounded-2xl border border-red-500/15 bg-[#1a0410]/70 p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.04)] backdrop-blur"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25 }}
           >
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="flex items-center gap-2 text-white">
-                <Sparkles className="h-4 w-4 text-red-300" />
-                <h3 className="text-lg font-semibold tracking-tight">{note.version}</h3>
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(248,113,113,0.15),transparent_70%)] opacity-90" />
+            <div className="relative">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="flex items-center gap-2 text-white">
+                  <Sparkles className="h-4 w-4 text-red-300" />
+                  <h3 className="text-lg font-semibold tracking-tight">{note.version}</h3>
+                </div>
+                <div className="text-xs uppercase tracking-wide text-white/50">{note.date}</div>
               </div>
-              <div className="text-xs uppercase tracking-wide text-white/50">{note.date}</div>
+              <p className="mt-2 text-sm text-white/70 leading-relaxed">{note.summary}</p>
+              <ul className="mt-3 space-y-2 text-sm text-white/80">
+                {note.highlights.map(item => (
+                  <li key={item} className="flex items-center gap-2">
+                    <TagsIcon className="h-4 w-4 text-white/50" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <p className="mt-2 text-sm text-white/70 leading-relaxed">{note.summary}</p>
-            <ul className="mt-3 space-y-2 text-sm text-white/80">
-              {note.highlights.map(item => (
-                <li key={item} className="flex items-center gap-2">
-                  <TagsIcon className="h-4 w-4 text-white/50" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
           </motion.article>
         ))}
       </div>
@@ -521,71 +530,74 @@ function ProjectsPage({
           <motion.article
             key={project.projectId}
             layout
-            className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.04)]"
+            className="relative overflow-hidden rounded-2xl border border-red-500/15 bg-[#12030b]/70 p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.04)] backdrop-blur"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25 }}
           >
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <div className="text-xs uppercase tracking-wide text-white/50">Project</div>
-                <h3 className="mt-1 text-xl font-semibold tracking-tight text-white">{project.projectName}</h3>
-                <p className="mt-2 max-w-3xl text-sm text-white/70 leading-relaxed">{project.projectSummary}</p>
-              </div>
-              <div className="text-right">
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-wide text-white/60">
-                  <Hash className="h-3 w-3 text-white/50" />
-                  {project.projectId}
-                </span>
-              </div>
-            </div>
-            <div className="mt-4 grid gap-3 text-sm text-white/80 lg:grid-cols-3">
-              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
-                <div className="text-[11px] uppercase tracking-wide text-white/50">Timeline</div>
-                <div className="mt-1 flex flex-col gap-1">
-                  <span>Start: {project.startDate}</span>
-                  <span>Due: {project.dueDate}</span>
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(248,113,113,0.14),transparent_70%)] opacity-90" />
+            <div className="relative">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <div className="text-xs uppercase tracking-wide text-white/50">Project</div>
+                  <h3 className="mt-1 text-xl font-semibold tracking-tight text-white">{project.projectName}</h3>
+                  <p className="mt-2 max-w-3xl text-sm text-white/70 leading-relaxed">{project.projectSummary}</p>
                 </div>
-              </div>
-              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
-                <div className="text-[11px] uppercase tracking-wide text-white/50">Ownership</div>
-                <div className="mt-1 flex flex-col gap-1">
-                  <span>Project Manager: {project.projectManager}</span>
-                  <span>Revenue Impacting: {project.revenueImpacting ? "Yes" : "No"}</span>
-                </div>
-              </div>
-              <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
-                <div className="text-[11px] uppercase tracking-wide text-white/50">Budget</div>
-                <div className="mt-1 flex flex-col gap-1">
-                  <span>Cost: {formatCurrency(project.cost)}</span>
-                </div>
-              </div>
-            </div>
-            <div className="mt-4 space-y-2">
-              <div className="text-[11px] uppercase tracking-wide text-white/50">Assigned Business Units</div>
-              <div className="flex flex-wrap gap-2">
-                {project.assignedBusinessUnits.map(unit => (
-                  <span
-                    key={unit}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/80"
-                  >
-                    <Users className="h-3 w-3 text-white/50" />
-                    {unit}
+                <div className="text-right">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-wide text-white/60">
+                    <Hash className="h-3 w-3 text-white/50" />
+                    {project.projectId}
                   </span>
-                ))}
+                </div>
               </div>
-            </div>
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-              <button
-                type="button"
-                onClick={() => onSelect(project)}
-                className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 transition hover:bg-white/10"
-              >
-                {project.learnMoreLabel ?? "Learn More"}
-                <ChevronRight className="h-4 w-4" />
-              </button>
-              <div className="text-xs text-white/60">
-                Last updated: {project.lastUpdatedNote ?? "FY26 program tracking"}
+              <div className="mt-4 grid gap-3 text-sm text-white/80 lg:grid-cols-3">
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                  <div className="text-[11px] uppercase tracking-wide text-white/50">Timeline</div>
+                  <div className="mt-1 flex flex-col gap-1">
+                    <span>Start: {project.startDate}</span>
+                    <span>Due: {project.dueDate}</span>
+                  </div>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                  <div className="text-[11px] uppercase tracking-wide text-white/50">Ownership</div>
+                  <div className="mt-1 flex flex-col gap-1">
+                    <span>Project Manager: {project.projectManager}</span>
+                    <span>Revenue Impacting: {project.revenueImpacting ? "Yes" : "No"}</span>
+                  </div>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                  <div className="text-[11px] uppercase tracking-wide text-white/50">Budget</div>
+                  <div className="mt-1 flex flex-col gap-1">
+                    <span>Cost: {formatCurrency(project.cost)}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 space-y-2">
+                <div className="text-[11px] uppercase tracking-wide text-white/50">Assigned Business Units</div>
+                <div className="flex flex-wrap gap-2">
+                  {project.assignedBusinessUnits.map(unit => (
+                    <span
+                      key={unit}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/80"
+                    >
+                      <Users className="h-3 w-3 text-white/50" />
+                      {unit}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => onSelect(project)}
+                  className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 transition hover:bg-white/10"
+                >
+                  {project.learnMoreLabel ?? "Learn More"}
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+                <div className="text-xs text-white/60">
+                  Last updated: {project.lastUpdatedNote ?? "FY26 program tracking"}
+                </div>
               </div>
             </div>
           </motion.article>
@@ -689,9 +701,11 @@ const hasQuery = trimmedQuery.length > 0;
 
   return (
 
-    <div className="min-h-screen bg-black text-white" id="top">
+    <div className="relative min-h-screen overflow-hidden bg-[#050208] text-white" id="top">
+      <div className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(ellipse_at_top,_rgba(248,113,113,0.2),transparent_65%)]" />
+      <div className="pointer-events-none absolute inset-0 -z-30 bg-[linear-gradient(135deg,_#0b0206,_#010104_55%,_#0d0311)] opacity-90" />
 
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-black/70 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-red-500/20 bg-[#0b0206]/80 backdrop-blur-xl">
 
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
 
@@ -937,7 +951,7 @@ const hasQuery = trimmedQuery.length > 0;
               <motion.div
                 role="dialog"
                 aria-modal="true"
-                className="relative z-10 w-full max-w-lg rounded-2xl border border-white/10 bg-neutral-900/95 p-6 shadow-xl"
+                className="relative z-10 w-full max-w-lg rounded-2xl border border-red-500/20 bg-[#16040d]/95 p-6 shadow-xl"
                 initial={{ scale: 0.97, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.97, opacity: 0 }}
@@ -1003,7 +1017,7 @@ const hasQuery = trimmedQuery.length > 0;
               <motion.div
                 role="dialog"
                 aria-modal="true"
-                className="relative z-10 w-full max-w-2xl rounded-2xl border border-white/10 bg-neutral-900/95 p-6 shadow-xl"
+                className="relative z-10 w-full max-w-2xl rounded-2xl border border-red-500/20 bg-[#16040d]/95 p-6 shadow-xl"
                 initial={{ scale: 0.97, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.97, opacity: 0 }}
@@ -1123,7 +1137,7 @@ const hasQuery = trimmedQuery.length > 0;
 
         href="#docs/portal"
 
-        className="fixed bottom-4 right-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs text-white/80 backdrop-blur hover:bg-white/10"
+        className="fixed bottom-4 right-4 inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-500/15 px-4 py-2 text-xs text-white/80 backdrop-blur hover:bg-red-500/25"
 
         title="Portal docs"
 
