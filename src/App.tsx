@@ -8,6 +8,8 @@ import {
   Settings,
   Wrench,
   Users,
+  LayoutGrid,
+  GitBranch,
   Phone,
   Mail,
   Hash,
@@ -23,6 +25,7 @@ import projectsData from "./data/projects.json";
 import toolsData from "./data/tools.json";
 import newsData from "./data/news.json";
 import updatesData from "./data/updates.json";
+import blogData from "./data/blog.json";
 import packageJson from "../package.json";
 
 // ------------------------------------------------------------------
@@ -46,6 +49,7 @@ interface Tool {
 
 const TOOLS: Tool[] = toolsData as Tool[];
 interface UpdateEntry {
+  articleId?: string;
   version: string;
   date: string;
   summary: string;
@@ -53,6 +57,29 @@ interface UpdateEntry {
 }
 
 const UPDATES: UpdateEntry[] = updatesData as UpdateEntry[];
+
+interface BlogSection {
+  heading?: string;
+  body: string[];
+}
+
+interface BlogPost {
+  id: string;
+  title: string;
+  author: string;
+  date: string;
+  tagline: string;
+  sections: BlogSection[];
+}
+
+const BLOG_POSTS: BlogPost[] = blogData as BlogPost[];
+const BLOG_LOOKUP: Record<string, BlogPost> = BLOG_POSTS.reduce(
+  (acc, post) => {
+    acc[post.id] = post;
+    return acc;
+  },
+  {} as Record<string, BlogPost>
+);
 
 interface NewsPost {
   title: string;
@@ -67,6 +94,25 @@ interface NewsPost {
 const NEWS: NewsPost[] = newsData as NewsPost[];
 
 const APP_VERSION = packageJson.version;
+
+const PORTAL_GUIDE_STEPS = [
+  {
+    title: "Choose a workspace view",
+    description: "Use the top navigation to jump between Tools, Internal Projects, News, Updates, and the Org Chart.",
+  },
+  {
+    title: "Search and filter",
+    description: "Filter tools instantly with the global search so results update as you type and match names, tags, and descriptions.",
+  },
+  {
+    title: "Drill into details",
+    description: "Select a tool or project card to open its side panel for documentation links, highlights, and delivery context.",
+  },
+  {
+    title: "Share context quickly",
+    description: "Copy deep links (like this guide) or use the What's New notes to broadcast the latest changes to the team.",
+  },
+];
 
 function normalizeForSearch(value: string) {
   return value
@@ -131,6 +177,11 @@ interface OrgChartData {
 
 }
 
+interface OrgTreeNode {
+  member: OrgMember;
+  children: OrgTreeNode[];
+}
+
 const ORG_DATA: OrgChartData = orgChartData;
 
 interface InternalProject {
@@ -154,6 +205,7 @@ const INTERNAL_PROJECTS: InternalProject[] = projectsData;
 
 
 type View = "tools" | "projects" | "news" | "updates" | "org";
+type OrgViewMode = "cards" | "tree";
 
 const STATUS_COLORS: Record<string, string> = {
 
@@ -240,6 +292,60 @@ function ToolCard({ tool, onInfo }: { tool: Tool; onInfo: () => void }) {
 
 // Org Chart Components
 // ------------------------------------------------------------------
+const normalizeKey = (value: string) => value.trim().toLowerCase();
+
+function buildOrgTree(members: OrgMember[]): OrgTreeNode[] {
+  if (members.length === 0) {
+    return [];
+  }
+
+  const nodes = new Map<string, OrgTreeNode>();
+  const byName = new Map<string, OrgTreeNode>();
+  const byEmployeeId = new Map<string, OrgTreeNode>();
+
+  members.forEach(member => {
+    const node: OrgTreeNode = { member, children: [] };
+    nodes.set(member.id, node);
+    if (member.name) {
+      byName.set(normalizeKey(member.name), node);
+    }
+    if (member.employeeId) {
+      byEmployeeId.set(normalizeKey(member.employeeId), node);
+    }
+  });
+
+  const roots: OrgTreeNode[] = [];
+
+  members.forEach(member => {
+    const node = nodes.get(member.id);
+    if (!node) {
+      return;
+    }
+    const managerValue = member.manager?.toString().trim();
+    if (managerValue) {
+      const managerKey = normalizeKey(managerValue);
+      const managerNode = byEmployeeId.get(managerKey) ?? byName.get(managerKey);
+      if (managerNode && managerNode !== node) {
+        managerNode.children.push(node);
+        return;
+      }
+    }
+    roots.push(node);
+  });
+
+  const sortNodes = (list: OrgTreeNode[]) => {
+    list.sort((a, b) => a.member.name.localeCompare(b.member.name));
+    list.forEach(child => {
+      if (child.children.length > 0) {
+        sortNodes(child.children);
+      }
+    });
+  };
+
+  sortNodes(roots);
+  return roots;
+}
+
 function OrgMemberCard({ member }: { member: OrgMember }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -404,7 +510,96 @@ function OrgUnitSection({ unit }: { unit: BusinessUnit }) {
   );
 }
 
-function OrgChart({ data }: { data: OrgChartData }) {
+function OrgTreeNodeCard({ node, depth }: { node: OrgTreeNode; depth: number }) {
+  const containerClasses =
+    depth === 0 ? "space-y-3" : "space-y-3 border-l border-dashed border-white/15 pl-5 ml-3";
+  const managerLabel =
+    typeof node.member.manager === "string" && node.member.manager.trim().length > 0
+      ? node.member.manager
+      : "None";
+  const hasChildren = node.children.length > 0;
+
+  return (
+    <div className={containerClasses}>
+      <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 shadow-[0_0_0_1px_rgba(255,255,255,0.04)]">
+        <div className="flex flex-wrap items-center gap-2">
+          <h4 className="text-sm font-semibold tracking-tight text-white">{node.member.name}</h4>
+          <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/60">
+            <Hash className="h-3 w-3 text-white/50" />
+            {node.member.employeeId}
+          </span>
+        </div>
+        <p className="mt-1 text-xs text-white/60">{node.member.jobTitle}</p>
+        <p className="mt-2 text-sm text-white/80">{node.member.summary}</p>
+        <div className="mt-3 flex flex-wrap gap-2 text-[11px] uppercase tracking-wide text-white/60">
+          <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5">
+            <Users className="h-3 w-3 text-white/50" />
+            Reports: {node.member.directReports}
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5">
+            <UserCircle2 className="h-3 w-3 text-white/50" />
+            Manager: {managerLabel}
+          </span>
+        </div>
+      </div>
+      {hasChildren && (
+        <div className="mt-2 space-y-2">
+          {node.children.map(child => (
+            <OrgTreeNodeCard key={child.member.id} node={child} depth={depth + 1} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function OrgTreeUnit({ unit }: { unit: BusinessUnit }) {
+  const hierarchy = useMemo(() => buildOrgTree(unit.employees), [unit.employees]);
+
+  return (
+    <motion.section
+      layout
+      className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.04)]"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="text-base font-semibold tracking-tight text-white">{unit.name}</h3>
+        <span className="text-xs uppercase tracking-wide text-white/60">{unit.employees.length} members</span>
+      </div>
+      {unit.employees.length === 0 ? (
+        <div className="mt-4 rounded-lg border border-dashed border-white/15 bg-white/[0.02] px-4 py-6 text-sm text-white/50">
+          No active members assigned.
+        </div>
+      ) : (
+        <div className="mt-5 space-y-4">
+          {hierarchy.length === 0 ? (
+            <p className="text-sm text-white/60">Structure pending. Members will appear here once managers are set.</p>
+          ) : (
+            hierarchy.map(node => <OrgTreeNodeCard key={node.member.id} node={node} depth={0} />)
+          )}
+        </div>
+      )}
+    </motion.section>
+  );
+}
+
+function OrgTreeView({ units }: { units: BusinessUnit[] }) {
+  return (
+    <div className="space-y-6">
+      {units.map(unit => (
+        <OrgTreeUnit key={unit.id} unit={unit} />
+      ))}
+    </div>
+  );
+}
+
+function OrgChart({ data, mode }: { data: OrgChartData; mode: OrgViewMode }) {
+  if (mode === "tree") {
+    return <OrgTreeView units={data.businessUnits} />;
+  }
+
   return (
     <div className="space-y-6">
       {data.businessUnits.map(unit => (
@@ -468,7 +663,15 @@ function NewsPage({ posts }: { posts: NewsPost[] }) {
     </section>
   );
 }
-function UpdatesPage({ updates }: { updates: UpdateEntry[] }) {
+function UpdatesPage({
+  updates,
+  articles,
+  onReadMore,
+}: {
+  updates: UpdateEntry[];
+  articles: Record<string, BlogPost>;
+  onReadMore: (post: BlogPost) => void;
+}) {
   return (
     <section className="mt-6 space-y-5">
       <div className="space-y-2">
@@ -476,12 +679,14 @@ function UpdatesPage({ updates }: { updates: UpdateEntry[] }) {
         <p className="text-sm text-white/70">Release notes and operational updates for the internal portal.</p>
       </div>
       <div className="space-y-4">
-        {updates.map(note => (
-          <motion.article
-            key={note.version}
-            layout
-            className="relative overflow-hidden rounded-2xl border border-red-500/15 bg-[#1a0410]/70 p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.04)] backdrop-blur"
-            initial={{ opacity: 0, y: 12 }}
+        {updates.map(note => {
+          const linkedArticle = note.articleId ? articles[note.articleId] : null;
+          return (
+            <motion.article
+              key={note.version}
+              layout
+              className="relative overflow-hidden rounded-2xl border border-red-500/15 bg-[#1a0410]/70 p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.04)] backdrop-blur"
+              initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25 }}
           >
@@ -503,9 +708,23 @@ function UpdatesPage({ updates }: { updates: UpdateEntry[] }) {
                   </li>
                 ))}
               </ul>
+              {linkedArticle && (
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs text-white/60">
+                  <span>Deeper dive available: {linkedArticle.title}</span>
+                  <button
+                    type="button"
+                    onClick={() => onReadMore(linkedArticle)}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] uppercase tracking-wide text-white/80 transition hover:bg-white/10"
+                  >
+                    Read article
+                    <ChevronRight className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
             </div>
           </motion.article>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
@@ -621,6 +840,21 @@ export default function App() {
 
   const [selectedProject, setSelectedProject] = useState<InternalProject | null>(null);
 
+  const [selectedArticle, setSelectedArticle] = useState<BlogPost | null>(null);
+
+  const [isPortalGuideOpen, setPortalGuideOpen] = useState(false);
+
+  const [orgViewMode, setOrgViewMode] = useState<OrgViewMode>("cards");
+
+  const latestUpdate = useMemo(() => {
+    if (UPDATES.length === 0) {
+      return null;
+    }
+    return [...UPDATES].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+  }, []);
+
+  const whatsNewVersionLabel = latestUpdate?.version ?? `Internal Portal v${APP_VERSION}`;
+
 
 
   useEffect(() => {
@@ -638,7 +872,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!selectedTool && !selectedProject) {
+    if (!selectedTool && !selectedProject && !selectedArticle && !isPortalGuideOpen) {
       return;
     }
 
@@ -650,12 +884,42 @@ export default function App() {
         if (selectedProject) {
           setSelectedProject(null);
         }
+        if (selectedArticle) {
+          setSelectedArticle(null);
+        }
+        if (isPortalGuideOpen) {
+          setPortalGuideOpen(false);
+        }
       }
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selectedTool, selectedProject]);
+  }, [selectedTool, selectedProject, selectedArticle, isPortalGuideOpen]);
+
+  useEffect(() => {
+    const syncFromHash = () => {
+      if (window.location.hash === "#docs/portal") {
+        setPortalGuideOpen(true);
+      } else {
+        setPortalGuideOpen(false);
+      }
+    };
+
+    syncFromHash();
+    window.addEventListener("hashchange", syncFromHash);
+    return () => window.removeEventListener("hashchange", syncFromHash);
+  }, []);
+
+  useEffect(() => {
+    if (isPortalGuideOpen) {
+      if (window.location.hash !== "#docs/portal") {
+        window.location.hash = "docs/portal";
+      }
+    } else if (window.location.hash === "#docs/portal") {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+  }, [isPortalGuideOpen]);
 
 
 const visibleTools = useMemo(() => {
@@ -698,6 +962,11 @@ const hasQuery = trimmedQuery.length > 0;
     { key: "updates", label: "Updates", icon: Sparkles },
     { key: "org", label: "Org Chart", icon: Users },
   ];
+  const orgViewOptions: Array<{ key: OrgViewMode; label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }> =
+    [
+      { key: "cards", label: "Card View", icon: LayoutGrid },
+      { key: "tree", label: "Tree View", icon: GitBranch },
+    ];
 
   return (
 
@@ -891,7 +1160,7 @@ const hasQuery = trimmedQuery.length > 0;
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.25 }}
             >
-              <UpdatesPage updates={UPDATES} />
+              <UpdatesPage updates={UPDATES} articles={BLOG_LOOKUP} onReadMore={post => setSelectedArticle(post)} />
             </motion.div>
           )}
 
@@ -911,21 +1180,69 @@ const hasQuery = trimmedQuery.length > 0;
 
             >
 
-              <section className="mt-6 space-y-3">
+              <section className="mt-6 space-y-4">
 
-                <div className="space-y-2">
+                <div className="flex flex-wrap items-start justify-between gap-4">
 
-                  <h2 className="text-lg font-semibold tracking-tight">Organization Chart</h2>
+                  <div className="space-y-2">
 
-                  <p className="text-sm text-white/70">
+                    <h2 className="text-lg font-semibold tracking-tight">Organization Chart</h2>
 
-                    Expand teams to see ownership, responsibilities, and quick contact details for the Lab168 crew.
+                    <p className="text-sm text-white/70">
 
-                  </p>
+                      Expand teams to see ownership, responsibilities, and quick contact details for the Lab168 crew.
+
+                    </p>
+
+                  </div>
+
+                  <div
+
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 p-1 text-xs"
+
+                    role="group"
+
+                    aria-label="Org chart view mode"
+
+                  >
+
+                    {orgViewOptions.map(option => {
+
+                      const active = orgViewMode === option.key;
+
+                      const Icon = option.icon;
+
+                      return (
+
+                        <button
+
+                          key={option.key}
+
+                          type="button"
+
+                          onClick={() => setOrgViewMode(option.key)}
+
+                          className={`flex items-center gap-1 rounded-full px-3 py-1.5 transition ${active ? "bg-red-500/30 text-white shadow-[0_0_0_1px_rgba(248,113,113,0.4)]" : "text-white/70 hover:text-white"}`}
+
+                          aria-pressed={active}
+
+                        >
+
+                          <Icon className="h-4 w-4" />
+
+                          {option.label}
+
+                        </button>
+
+                      );
+
+                    })}
+
+                  </div>
 
                 </div>
 
-                <OrgChart data={ORG_DATA} />
+                <OrgChart data={ORG_DATA} mode={orgViewMode} />
 
               </section>
 
@@ -1112,6 +1429,69 @@ const hasQuery = trimmedQuery.length > 0;
               </motion.div>
             </motion.div>
           )}
+          {selectedArticle && (
+            <motion.div
+              key="article-modal"
+              className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div
+                className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+                onClick={() => setSelectedArticle(null)}
+              />
+              <motion.article
+                role="dialog"
+                aria-modal="true"
+                className="relative z-10 w-full max-w-3xl rounded-2xl border border-red-500/20 bg-[#14030d]/95 p-6 shadow-2xl"
+                initial={{ scale: 0.97, opacity: 0, y: 10 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.97, opacity: 0, y: 10 }}
+              >
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-[11px] uppercase tracking-[0.3em] text-white/50">Release Article</p>
+                    <h3 className="mt-1 text-2xl font-semibold tracking-tight text-white">{selectedArticle.title}</h3>
+                    <p className="text-xs uppercase tracking-wide text-white/50">
+                      {selectedArticle.date} • {selectedArticle.author}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedArticle(null)}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/70 transition hover:text-white"
+                    aria-label="Close article"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                <p className="mt-3 text-sm text-white/70 leading-relaxed">{selectedArticle.tagline}</p>
+                <div className="mt-5 space-y-5">
+                  {selectedArticle.sections.map((section, sectionIndex) => (
+                    <section
+                      key={`${section.heading ?? "section"}-${sectionIndex}`}
+                      className="rounded-2xl border border-white/5 bg-white/[0.02] p-4"
+                    >
+                      {section.heading && (
+                        <h4 className="text-base font-semibold text-white">{section.heading}</h4>
+                      )}
+                      <div className="mt-2 space-y-3">
+                        {section.body.map((paragraph, paragraphIndex) => (
+                          <p
+                            key={`paragraph-${sectionIndex}-${paragraphIndex}`}
+                            className="text-sm leading-relaxed text-white/80"
+                          >
+                            {paragraph}
+                          </p>
+                        ))}
+                      </div>
+                    </section>
+                  ))}
+                </div>
+              </motion.article>
+            </motion.div>
+          )}
         </AnimatePresence>
 
         {/* Footer */}
@@ -1133,21 +1513,122 @@ const hasQuery = trimmedQuery.length > 0;
 
       </div>
 
-      <a
-
-        href="#docs/portal"
-
-        className="fixed bottom-4 right-4 inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-500/15 px-4 py-2 text-xs text-white/80 backdrop-blur hover:bg-red-500/25"
-
+      <button
+        type="button"
+        onClick={() => setPortalGuideOpen(true)}
+        className="fixed bottom-4 right-4 inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-500/15 px-4 py-2 text-xs text-white/80 backdrop-blur transition hover:bg-red-500/25 focus:outline-none focus:ring-2 focus:ring-red-500/50"
         title="Portal docs"
-
+        aria-haspopup="dialog"
+        aria-expanded={isPortalGuideOpen}
       >
-
         <Wrench className="h-4 w-4" />
-
         Portal Guide
+      </button>
 
-      </a>
+      <AnimatePresence>
+        {isPortalGuideOpen && (
+          <motion.div
+            key="portal-guide"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setPortalGuideOpen(false)}
+            />
+            <motion.div
+              className="relative z-10 w-full max-w-3xl rounded-2xl border border-white/10 bg-[#0b0206] p-6 shadow-2xl"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.2 }}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Internal Portal Guide"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.3em] text-white/50">Portal Support</p>
+                  <h2 className="mt-1 text-2xl font-semibold text-white">Internal Portal Guide</h2>
+                  <p className="mt-1 text-sm text-white/60">
+                    Quick onboarding notes plus the latest release context for teammates dropping in.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPortalGuideOpen(false)}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/70 transition hover:text-white"
+                >
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Close portal guide</span>
+                </button>
+              </div>
+              <div className="mt-6 grid gap-5 md:grid-cols-2">
+                <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                  <div className="flex items-center gap-2 text-white">
+                    <Info className="h-5 w-5 text-red-300" />
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wide text-white/60">How to use</p>
+                      <h3 className="text-lg font-semibold text-white">Internal Portal</h3>
+                    </div>
+                  </div>
+                  <ul className="mt-4 space-y-3 text-sm text-white/80">
+                    {PORTAL_GUIDE_STEPS.map(step => (
+                      <li
+                        key={step.title}
+                        className="rounded-xl border border-white/5 bg-black/20 p-3 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]"
+                      >
+                        <p className="font-medium text-white">{step.title}</p>
+                        <p className="mt-1 text-white/70">{step.description}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+                <section className="rounded-2xl border border-red-500/30 bg-red-500/10 p-5">
+                  <div className="flex items-center gap-2 text-white">
+                    <Sparkles className="h-5 w-5 text-red-200" />
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wide text-white/70">What's new</p>
+                      <h3 className="text-lg font-semibold text-white">{whatsNewVersionLabel}</h3>
+                    </div>
+                  </div>
+                  {latestUpdate ? (
+                    <>
+                      <p className="mt-2 text-sm text-white/80">{latestUpdate.summary}</p>
+                      <p className="mt-1 text-xs uppercase tracking-wide text-white/60">{latestUpdate.date}</p>
+                      <ul className="mt-4 space-y-2 text-sm text-white">
+                        {latestUpdate.highlights.map(item => (
+                          <li key={item} className="flex items-start gap-2">
+                            <Sparkles className="mt-0.5 h-4 w-4 text-white/70" />
+                            <span className="text-white/90">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <button
+                        type="button"
+                        onClick={() => setView("updates")}
+                        className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-white/90 underline-offset-4 hover:underline"
+                      >
+                        View full release log
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </>
+                  ) : (
+                    <p className="mt-3 text-sm text-white/80">
+                      We're finalizing release notes for this build. Check back soon for the highlights.
+                    </p>
+                  )}
+                </section>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
 
     </div>

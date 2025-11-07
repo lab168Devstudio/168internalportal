@@ -1,64 +1,74 @@
 {
   "businessUnits": [
     {
-      "id": "leadership",
-      "name": "Executive Leadership - CAIO",
+      "id": "Executive-leadership",
+      "name": "Enterprise Office - LAB168 Executive Team",
       "employees": [
         {
           "id": "L168-001",
           "name": "Alex Molloy",
-          "jobTitle": "Co-Founder, Chief Operations Officer - Growth Strategy",
-          "businessUnit": "Executive Leadership - CAIO",
+          "jobTitle": "Co-Founder, COO, CAIO",
+          "businessUnit": "LAB168 Executive Team",
           "phone": "+1-709-424-2256",
           "email": "alex@lab168.ca",
           "employeeId": "L168-001",
-          "tags": ["Operations Management", "Brand Growth"],
+          "tags": ["Executive Team"],
           "startDate": "2025-08-15",
           "summary": "Owns the Growth Strategy Portfolio, Internal Operations Portfolio, Internal Policy",
           "directReports": 0,
           "manager": null,
-          "projects": ["FY26 Growth Strategy"]
+          "projects": ["L26 Opening Campaign"]
         },
         {
           "id": "L168-002",
           "name": "Matt Rice",
-          "jobTitle": "Co-Founder, Chief Technology Officer - Products & Systems",
-          "businessUnit": "Lab168 Leadership",
+          "jobTitle": "Co-Founder, CTO, CAIO",
+          "businessUnit": "LAB168 Executive Team",
           "phone": "+1-709-424-5485",
           "email": "matt@lab168.ca",
           "employeeId": "L168-002",
-          "tags": ["AI Architecture", "Systems Management"],
+          "tags": ["Executive Team"],
           "startDate": "2025-08-15",
           "summary": "Guides product architecture, internal tooling, and AI-driven automation across every delivery pod.",
           "directReports": 0,
           "manager": null,
-          "projects": ["FY26 Growth Strategy"]
+          "projects": ["L26 Opening Campaign"]
         }
       ]
     },
     {
-      "id": "product-studio",
-      "name": "Senior Leadership - Product",
+      "id": "organization-management",
+      "name": "Executive Management Team - LAB168 Digital Solutions",
+      "employees": []
+    },
+       {
+      "id": "regulatory-partners",
+      "name": "Executive Regulatory Team - LAB168 Digital Solutions",
       "employees": []
     },
     {
-      "id": "automation-pod",
-      "name": "Design & Development - Product",
+      "id": "adfin-partners",
+      "name": "Management - Administrative & Finance",
       "employees": []
     },
     {
-      "id": "client-success",
-      "name": "Account Executive & Sales Leadership Team",
+      "id": "clexp-partners",
+      "name": "Management - Client Experience",
       "employees": []
     },
     {
-      "id": "innovation-lab",
-      "name": "Business Analyst, Product Research",
+      "id": "sales-partners",
+      "name": "Management - Sales & Marketing",
       "employees": []
     },
     {
-      "id": "growth-lab",
-      "name": "Sales Team, Customer Service Team.",
+      "id": "sales-team",
+      "name": "Sales Team Members - LAB168 Digital Solutions",
+      "employees": []
+    },
+    {
+      "id": "technical-team",
+      "name": "Technical Team - LAB168 Digital Solutions",
       "employees": []
     }
   ]

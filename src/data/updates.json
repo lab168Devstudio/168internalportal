@@ -1,5 +1,6 @@
 [
   {
+    "articleId": "release-1-0-1",
     "version": "Internal Portal 1.0.1",
     "date": "Nov 4, 2025",
     "summary": "Updated back-end architecture to support Git versioning & database automation.",
@@ -10,6 +11,7 @@
     ]
   },
   {
+    "articleId": "release-1-0-0",
     "version": "Internal Portal 1.0.0",
     "date": "Oct 29, 2025",
     "summary": "Initial release of the internal portal dashboard with tools, org chart, and project tracking.",

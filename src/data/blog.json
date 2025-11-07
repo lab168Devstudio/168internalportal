@@ -1,0 +1,62 @@
+[
+  {
+    "id": "release-1-0-1",
+    "title": "Internal Portal 1.0.1 - Git-Synced Releases & Automation",
+    "author": "Lab168 Platform Team",
+    "date": "Nov 4, 2025",
+    "tagline": "How we moved release state into Git and unlocked the Supabase automation layer.",
+    "sections": [
+      {
+        "heading": "What changed",
+        "body": [
+          "We migrated all deployment metadata from Netlify dashboard state into Git so that the portal can reference version history directly from the repo. This keeps every build artifact auditable and lets engineers diff operational toggles alongside code.",
+          "In parallel we wired Supabase into the internal tools layer, creating a shared automation surface for JSON data management. The intent is to remove one-off scripts and give the team realtime read/write access to structured portal content."
+        ]
+      },
+      {
+        "heading": "Operational impact",
+        "body": [
+          "Release managers no longer have to reconcile Netlify's UI state with what actually shipped - Git tags now drive the portal version badge as well as the change log.",
+          "Supabase became the single source of truth for tool metadata, so new modules can launch without a rebuild. This paves the way for progressive delivery of experiments while keeping approvals centralized."
+        ]
+      },
+      {
+        "heading": "Next steps",
+        "body": [
+          "Instrument Supabase row-level security to allow team-specific editing permissions.",
+          "Introduce scheduled content publishing so that updates can be drafted ahead of client QBRs."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "release-1-0-0",
+    "title": "Internal Portal 1.0.0 - Launch Notes",
+    "author": "Lab168 Founders",
+    "date": "Oct 29, 2025",
+    "tagline": "A walkthrough of the foundational experience and why we built it.",
+    "sections": [
+      {
+        "heading": "Foundation",
+        "body": [
+          "Version 1.0.0 shipped with the tools catalog, FY26 program tracker, and the first iteration of the org chart. All three surfaces are backed by JSON to keep contributions lightweight while we validate workflows.",
+          "Design intentionally mirrors the pitch experience - high-contrast panels, motion micro-interactions, and responsive cards that collapse into focused modules on smaller screens."
+        ]
+      },
+      {
+        "heading": "Workflow highlights",
+        "body": [
+          "Every tool exposes documentation and production links directly from its card, which consolidates onboarding for new pods.",
+          "Internal projects highlight stack, owners, and delivery state so cross-functional teams can quickly identify dependencies."
+        ]
+      },
+      {
+        "heading": "Where we're headed",
+        "body": [
+          "Next releases will tighten authentication, layer in analytics, and bring the knowledge base experience inside the portal.",
+          "Feedback cycles are open - drop requests inside the portal guide link so we can prioritize the backlog."
+        ]
+      }
+    ]
+  }
+]
