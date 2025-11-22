@@ -968,6 +968,111 @@ const hasQuery = trimmedQuery.length > 0;
       { key: "tree", label: "Tree View", icon: GitBranch },
     ];
 
+  const renderActiveView = () => {
+    switch (view) {
+      case "tools":
+        return (
+          <>
+            {/* Search / toolbar */}
+            <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-center">
+              <div className="relative flex-1">
+                <input
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  placeholder="Search tools..."
+                  className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 pl-10 pr-4 text-sm outline-none placeholder:text-white/40 focus:bg-white/7 focus:ring-1 focus:ring-red-500/40"
+                />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+              </div>
+            </div>
+
+            {/* Tools grid */}
+            <div className="mt-8 flex items-center justify-between">
+              <h2 className="text-lg font-semibold tracking-tight">Available Tools</h2>
+              <div className="text-xs text-white/50">
+                {visibleTools.length} result{visibleTools.length !== 1 ? "s" : ""}
+              </div>
+            </div>
+
+            {visibleTools.length === 0 ? (
+              <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-6 text-center text-sm text-white/60">
+                {hasQuery ? (
+                  <>
+                    <p>No tools match "{trimmedQuery}".</p>
+                    <p className="mt-2">Try a different keyword or tag.</p>
+                  </>
+                ) : (
+                  <p>Tools will appear here once they are published.</p>
+                )}
+              </div>
+            ) : (
+              <motion.div layout className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {visibleTools.map(tool => (
+                  <ToolCard
+                    key={`${tool.toolName}-${tool.toolVersion}`}
+                    tool={tool}
+                    onInfo={() => setSelectedTool(tool)}
+                  />
+                ))}
+              </motion.div>
+            )}
+          </>
+        );
+      case "projects":
+        return <ProjectsPage projects={INTERNAL_PROJECTS} onSelect={project => setSelectedProject(project)} />;
+      case "news":
+        return <NewsPage posts={NEWS} />;
+      case "updates":
+        return <UpdatesPage updates={UPDATES} articles={BLOG_LOOKUP} onReadMore={post => setSelectedArticle(post)} />;
+      case "org":
+        return (
+          <section className="mt-6 space-y-4">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="space-y-2">
+                <h2 className="text-lg font-semibold tracking-tight">Organization Chart</h2>
+                <p className="text-sm text-white/70">
+                  Expand teams to see ownership, responsibilities, and quick contact details for the Lab168 crew.
+                </p>
+              </div>
+              <div
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 p-1 text-xs"
+                role="group"
+                aria-label="Org chart view mode"
+              >
+                {orgViewOptions.map(option => {
+                  const active = orgViewMode === option.key;
+                  const Icon = option.icon;
+
+                  return (
+                    <button
+                      key={option.key}
+                      type="button"
+                      onClick={() => setOrgViewMode(option.key)}
+                      className={`flex items-center gap-1 rounded-full px-3 py-1.5 transition ${
+                        active
+                          ? "bg-red-500/30 text-white shadow-[0_0_0_1px_rgba(248,113,113,0.4)]"
+                          : "text-white/70 hover:text-white"
+                      }`}
+                      aria-pressed={active}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <OrgChart data={ORG_DATA} mode={orgViewMode} />
+          </section>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const activeView = renderActiveView();
+
   return (
 
     <div className="relative min-h-screen overflow-hidden bg-[#050208] text-white" id="top">
@@ -1043,214 +1148,11 @@ const hasQuery = trimmedQuery.length > 0;
       </header>
 
       <div className="mx-auto max-w-7xl px-4">
-
-        <AnimatePresence mode="wait">
-
-          {view === "tools" && (
-
-            <motion.div
-
-              key="tools"
-
-              initial={{ opacity: 0, y: 12 }}
-
-              animate={{ opacity: 1, y: 0 }}
-
-              exit={{ opacity: 0, y: -12 }}
-
-              transition={{ duration: 0.25 }}
-
-            >
-
-              {/* Search / toolbar */}
-
-              <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-center">
-
-                <div className="relative flex-1">
-
-                  <input
-
-                    value={query}
-
-                    onChange={(e) => setQuery(e.target.value)}
-
-                    placeholder="Search tools..."
-
-                    className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 pl-10 pr-4 text-sm outline-none placeholder:text-white/40 focus:bg-white/7 focus:ring-1 focus:ring-red-500/40"
-
-                  />
-
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
-
-                </div>
-
-              </div>
-
-              {/* Tools grid */}
-
-              <div className="mt-8 flex items-center justify-between">
-
-                <h2 className="text-lg font-semibold tracking-tight">Available Tools</h2>
-
-                <div className="text-xs text-white/50">
-
-                  {visibleTools.length} result{visibleTools.length !== 1 ? "s" : ""}
-
-                </div>
-
-              </div>
-
-              {visibleTools.length === 0 ? (
-                <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-6 text-center text-sm text-white/60">
-                  {hasQuery ? (
-                    <>
-                      <p>No tools match "{trimmedQuery}".</p>
-                      <p className="mt-2">Try a different keyword or tag.</p>
-                    </>
-                  ) : (
-                    <p>Tools will appear here once they are published.</p>
-                  )}
-                </div>
-              ) : (
-                <motion.div layout className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {visibleTools.map(tool => (
-                    <ToolCard
-                      key={`${tool.toolName}-${tool.toolVersion}`}
-                      tool={tool}
-                      onInfo={() => setSelectedTool(tool)}
-                    />
-                  ))}
-              </motion.div>
-            )}
-
+        {activeView && (
+          <motion.div key={view} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+            {activeView}
           </motion.div>
-
-          )}
-
-
-          {view === "projects" && (
-            <motion.div
-              key="projects"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.25 }}
-            >
-              <ProjectsPage projects={INTERNAL_PROJECTS} onSelect={project => setSelectedProject(project)} />
-            </motion.div>
-          )}
-
-          {view === "news" && (
-            <motion.div
-              key="news"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.25 }}
-            >
-              <NewsPage posts={NEWS} />
-            </motion.div>
-          )}
-
-          {view === "updates" && (
-            <motion.div
-              key="updates"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.25 }}
-            >
-              <UpdatesPage updates={UPDATES} articles={BLOG_LOOKUP} onReadMore={post => setSelectedArticle(post)} />
-            </motion.div>
-          )}
-
-          {view === "org" && (
-
-            <motion.div
-
-              key="org"
-
-              initial={{ opacity: 0, y: 12 }}
-
-              animate={{ opacity: 1, y: 0 }}
-
-              exit={{ opacity: 0, y: -12 }}
-
-              transition={{ duration: 0.25 }}
-
-            >
-
-              <section className="mt-6 space-y-4">
-
-                <div className="flex flex-wrap items-start justify-between gap-4">
-
-                  <div className="space-y-2">
-
-                    <h2 className="text-lg font-semibold tracking-tight">Organization Chart</h2>
-
-                    <p className="text-sm text-white/70">
-
-                      Expand teams to see ownership, responsibilities, and quick contact details for the Lab168 crew.
-
-                    </p>
-
-                  </div>
-
-                  <div
-
-                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 p-1 text-xs"
-
-                    role="group"
-
-                    aria-label="Org chart view mode"
-
-                  >
-
-                    {orgViewOptions.map(option => {
-
-                      const active = orgViewMode === option.key;
-
-                      const Icon = option.icon;
-
-                      return (
-
-                        <button
-
-                          key={option.key}
-
-                          type="button"
-
-                          onClick={() => setOrgViewMode(option.key)}
-
-                          className={`flex items-center gap-1 rounded-full px-3 py-1.5 transition ${active ? "bg-red-500/30 text-white shadow-[0_0_0_1px_rgba(248,113,113,0.4)]" : "text-white/70 hover:text-white"}`}
-
-                          aria-pressed={active}
-
-                        >
-
-                          <Icon className="h-4 w-4" />
-
-                          {option.label}
-
-                        </button>
-
-                      );
-
-                    })}
-
-                  </div>
-
-                </div>
-
-                <OrgChart data={ORG_DATA} mode={orgViewMode} />
-
-              </section>
-
-            </motion.div>
-
-          )}
-
-        </AnimatePresence>
+        )}
 
         <AnimatePresence>
           {selectedTool && (

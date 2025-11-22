@@ -1,24 +1,19 @@
 [
   {
-    "projectName": "FY26 Strategic Program",
-    "projectId": "PRJ-FY26",
-    "startDate": "2025-10-01",
-    "dueDate": "2026-09-30",
-    "projectManager": "Arianna Chen",
+    "projectName": "Q1 - 2026 Kickoff Campaign.",
+    "projectId": "PRJ-001",
+    "startDate": "2026-01-01",
+    "dueDate": "2026-03-31",
+    "projectManager": "Alex Molloy, Matthew Rice",
     "revenueImpacting": true,
-    "cost": 185000,
-    "projectSummary": "Multi-unit program aligning roadmap, automation, success operations, and growth efforts to hit FY26 revenue targets.",
+    "cost": 10000,
+    "projectSummary": "Q1 - 2026 Kickoff campaign aligns business priorities and establishes a 90 day sprint target for the brand.",
     "assignedBusinessUnits": [
-      "Lab168 Leadership",
-      "Product Studio",
-      "Automation Pod",
-      "Client Success",
-      "Growth Lab",
-      "Innovation Lab"
+      "Lab168 Enterprise Office"
     ],
-    "learnMoreLabel": "Open Program Hub",
+    "learnMoreLabel": "Read More",
     "learnMore": "https://lab168.ca/initiatives/fy26",
-    "lastUpdatedNote": "FY26 program tracking",
+    "lastUpdatedNote": "Monday, November 10th, 2025.",
     "detailSummary": "FY26 Strategic Program synchronizes automation, product, client success, and growth labs into a single roadmap that protects renewals and unlocks expansion. The initiative creates shared accountability, shared dashboards, and repeatable playbooks that every pod can use to execute against the annual plan.",
     "detailHighlights": [
       "Codifies quarterly milestones across automation, GTM enablement, and client success operations.",
