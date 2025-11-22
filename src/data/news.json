@@ -1,13 +1,16 @@
 [
   {
-    "title": "Welcome to the New Internal Portal!",
+    "title": "welcome to a sunny day",
     "slug": "new-launch",
     "date": "Nov 10, 2025",
     "author": "LAB168 Executive Team",
     "summary": "Welcome to the new LAB168 Internal Portal!",
     "body": "we've worked very hard to deliver the features that matter most. Enjoy a refined experience with the New LAB168 Internal Portal.",
     "links": [
-      { "label": "Read The Community Post", "url": "https://lab168.ca/internal/org" }
+      {
+        "label": "Read The Community Post",
+        "url": "https://lab168.ca/internal/org"
+      }
     ]
   }
 ]
